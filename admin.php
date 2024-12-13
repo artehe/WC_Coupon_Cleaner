@@ -121,26 +121,55 @@ class WCCouponCleaner_Admin {
 
 	public function woocommerce_coupon_cleanup_section_info() { }
 
-	public function removal_type_callback() { ?>
-		<fieldset><?php $checked = (!isset($this->woocommerce_coupon_cleanup_options['WCCouponCleaner_RemovalType']) || $this->woocommerce_coupon_cleanup_options['WCCouponCleaner_RemovalType'] === 'trash' ) ? 'checked' : ''; ?>
-		<label for="removal_type_0-0"><input type="radio" name="woocommerce_coupon_cleanup_option_name[WCCouponCleaner_RemovalType]" id="removal_type_0-0" value="trash" <?php echo $checked; ?>> Trash</label><br>
-		<?php $checked = ( isset($this->woocommerce_coupon_cleanup_options['WCCouponCleaner_RemovalType']) && $this->woocommerce_coupon_cleanup_options['WCCouponCleaner_RemovalType'] === 'delete' ) ? 'checked' : ''; ?>
-		<label for="removal_type_0-1"><input type="radio" name="woocommerce_coupon_cleanup_option_name[WCCouponCleaner_RemovalType]" id="removal_type_0-1" value="delete" <?php echo $checked; ?>> Permanently remove</label></fieldset> <?php
+	public function removal_type_callback() { 		
+		$setting = get_option('WCCouponCleaner_RemovalType');
+		$setting = $setting ? $setting : 'trash';
+		?>
+		<fieldset>
+		<label for="removal_type_0-0">
+			<input type="radio" name="woocommerce_coupon_cleanup_option_name[WCCouponCleaner_RemovalType]" id="removal_type_0-0" value="trash" <?php echo $setting === 'trash' ? 'checked' : ''; ?>> 
+			Trash
+		</label>
+		<br>
+		<label for="removal_type_0-1">
+			<input type="radio" name="woocommerce_coupon_cleanup_option_name[WCCouponCleaner_RemovalType]" id="removal_type_0-1" value="delete" <?php echo $setting === 'delete' ? 'checked' : ''; ?>> 
+			Permanently remove
+		</label>
+		</fieldset> 
+		<?php
 	}
 
-	public function frequency_callback() { ?>
-		<fieldset><?php $checked = ( isset($this->woocommerce_coupon_cleanup_options['WCCouponCleaner_Frequency']) && $this->woocommerce_coupon_cleanup_options['WCCouponCleaner_Frequency'] === 'hourly' ) ? 'checked' : ''; ?>
-		<label for="frequency_1-0"><input type="radio" name="woocommerce_coupon_cleanup_option_name[WCCouponCleaner_Frequency]" id="frequency_1-0" value="hourly" <?php echo $checked; ?>> Hourly</label><br>
-		<?php $checked = ( isset($this->woocommerce_coupon_cleanup_options['WCCouponCleaner_Frequency']) && $this->woocommerce_coupon_cleanup_options['WCCouponCleaner_Frequency'] === 'twicedaily' ) ? 'checked' : ''; ?>
-		<label for="frequency_1-1"><input type="radio" name="woocommerce_coupon_cleanup_option_name[WCCouponCleaner_Frequency]" id="frequency_1-1" value="twicedaily" <?php echo $checked; ?>> Twice a Day</label><br>
-		<?php $checked = (!isset($this->woocommerce_coupon_cleanup_options['WCCouponCleaner_Frequency']) || $this->woocommerce_coupon_cleanup_options['WCCouponCleaner_Frequency'] === 'daily' ) ? 'checked' : ''; ?>
-		<label for="frequency_1-2"><input type="radio" name="woocommerce_coupon_cleanup_option_name[WCCouponCleaner_Frequency]" id="frequency_1-2" value="daily" <?php echo $checked; ?>> Daily</label><br>
+	public function frequency_callback() {
+		$setting = get_option('WCCouponCleaner_Frequency');
+		$setting = $setting ? $setting : 'daily';
+		?>
+		<fieldset>
+		<label for="frequency_1-0">
+			<input type="radio" name="woocommerce_coupon_cleanup_option_name[WCCouponCleaner_Frequency]" id="frequency_1-0" value="hourly" <?php echo $setting === 'hourly' ? 'checked' : ''; ?>>
+			Hourly
+		</label>
+		<br>
+		<label for="frequency_1-1">
+			<input type="radio" name="woocommerce_coupon_cleanup_option_name[WCCouponCleaner_Frequency]" id="frequency_1-1" value="twicedaily" <?php echo $setting === 'twicedaily' ? 'checked' : ''; ?>> 
+			Twice a Day
+		</label>
+		<br>
+		<label for="frequency_1-2">
+			<input type="radio" name="woocommerce_coupon_cleanup_option_name[WCCouponCleaner_Frequency]" id="frequency_1-2" value="daily" <?php echo $setting === 'daily' ? 'checked' : ''; ?>> 
+			Daily
+		</label>
+		<br>
+		<label for="frequency_1-3">
+			<input type="radio" name="woocommerce_coupon_cleanup_option_name[WCCouponCleaner_Frequency]" id="frequency_1-3" value="weekly" <?php echo $setting === 'weekly' ? 'checked' : ''; ?>> 
+			Weekly
+		</label>
+		<br>
 		<?php
 	}
 
 	public function deletion_delay_callback() {
 		$setting = get_option('WCCouponCleaner_DeletionDelay');
-		$setting = $setting ? $setting : '';
+		$setting = $setting ? $setting : 0;
 		echo "<input id='WCCouponCleaner_DeletionDelayInput' min='0' name='WCCouponCleaner_DeletionDelay' type='number' value='" . esc_attr( $setting ) . "' />";
 
 		// Help text below the field
@@ -149,7 +178,7 @@ class WCCouponCleaner_Admin {
 
 	public function code_filter_callback() {
 		$setting = get_option('WCCouponCleaner_CouponCodeFilter');
-		$setting = $setting ? $setting : 0;
+		$setting = $setting ? $setting : '';
 		echo "<input id='WCCouponCleaner_CouponCodeFilterInput' name='WCCouponCleaner_CouponCodeFilter' type='text' value='" . esc_attr( $setting ) . "' />";
 
 		// Help text below the field
