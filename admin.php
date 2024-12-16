@@ -31,23 +31,34 @@ class WCCouponCleaner_Admin {
 	}
 
 	public function woocommerce_coupon_cleanup_create_admin_page() {
+		// check user capabilities
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
 		$this->woocommerce_coupon_cleanup_options = get_option('woocommerce_coupon_cleanup_option_name');
 		?>
-
 		<div class="wrap">
 			<h1><?php echo esc_html(get_admin_page_title()); ?></h1>
 			<p>Next cleanup scheduled at: <?php echo date('d-m-Y, H:i', wp_next_scheduled('delete_expired_coupons')); ?></p>
-				<?php settings_errors(); ?>
+
+			<?php 
+			if ( isset( $_GET['settings-updated'] ) ) {
+				// add settings saved message with the class of "updated"
+				add_settings_error( 'wcc_messages', 'wcc_messages', __( 'Settings Saved', 'woocommerce_coupon_cleanup_options' ), 'updated' );
+			}
+			// show error/update messages
+			settings_errors('wcc_messages'); 
+			?>
 
 			<form method="post" action="options.php">
 				<?php
 				settings_fields('woocommerce_coupon_cleanup_option_group');
-				do_settings_sections('wc-coupon-cleaner-admin');
-				submit_button('Save Settings');
+				do_settings_sections('wc-coupon-cleaner-admin');		
+				submit_button( 'Save Settings' );						
 				?>
 			</form>
 		</div>
-	<?php
+		<?php
 	}
 
 	public function woocommerce_coupon_cleanup_page_init() {
@@ -122,7 +133,7 @@ class WCCouponCleaner_Admin {
 	public function woocommerce_coupon_cleanup_section_info() { }
 
 	public function removal_type_callback() { 		
-		$setting = get_option('WCCouponCleaner_RemovalType');
+		$setting = $this->woocommerce_coupon_cleanup_options['WCCouponCleaner_RemovalType'];
 		$setting = $setting ? $setting : 'trash';
 		?>
 		<fieldset>
@@ -140,7 +151,7 @@ class WCCouponCleaner_Admin {
 	}
 
 	public function frequency_callback() {
-		$setting = get_option('WCCouponCleaner_Frequency');
+		$setting = $this->woocommerce_coupon_cleanup_options['WCCouponCleaner_Frequency'];
 		$setting = $setting ? $setting : 'daily';
 		?>
 		<fieldset>
@@ -168,18 +179,19 @@ class WCCouponCleaner_Admin {
 	}
 
 	public function deletion_delay_callback() {
-		$setting = get_option('WCCouponCleaner_DeletionDelay');
+		$setting = $this->woocommerce_coupon_cleanup_options['WCCouponCleaner_DeletionDelay'];
 		$setting = $setting ? $setting : 0;
-		echo "<input id='WCCouponCleaner_DeletionDelayInput' min='0' name='WCCouponCleaner_DeletionDelay' type='number' value='" . esc_attr( $setting ) . "' />";
+		echo "<input id='wcc_delection_delay' min='0' name='woocommerce_coupon_cleanup_option_name[WCCouponCleaner_DeletionDelay]' type='number' value='" . esc_attr( $setting ) . "' />";
 
 		// Help text below the field
 		echo '<p>The number of days to wait before deleting an expired coupon</p>';
 	}
 
 	public function code_filter_callback() {
-		$setting = get_option('WCCouponCleaner_CouponCodeFilter');
+		$options = $this->woocommerce_coupon_cleanup_options;
+		$setting = $this->woocommerce_coupon_cleanup_options['WCCouponCleaner_CouponCodeFilter'];
 		$setting = $setting ? $setting : '';
-		echo "<input id='WCCouponCleaner_CouponCodeFilterInput' name='WCCouponCleaner_CouponCodeFilter' type='text' value='" . esc_attr( $setting ) . "' />";
+		echo "<input id='wcc_coupon_code_filter' name='woocommerce_coupon_cleanup_option_name[WCCouponCleaner_CouponCodeFilter]' type='text' value='" . esc_attr( $setting ) . "' />";
 
 		// Help text below the field
 		echo '<p>Only deletes coupon codes that contain this text within them; Leave blank to target all coupons.</p>';
