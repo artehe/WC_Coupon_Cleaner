@@ -54,10 +54,15 @@ class WCCouponCleaner_CleanCoupons {
 
 	public function wp_delete_expired_coupons() {
 		$woocommerce_coupon_cleanup_options = get_option('woocommerce_coupon_cleanup_option_name');
+		if (!is_array($woocommerce_coupon_cleanup_options)) {
+			$woocommerce_coupon_cleanup_options = [];
+		}
 
-		// Work out the time to search for based on the deletion delay in days
-		$deletionDelay = time() - ($woocommerce_coupon_cleanup_options['WCCouponCleaner_DeletionDelay'] * 24 * 60 * 60);
-
+		$deletionDelay = time();
+		if (isset($woocommerce_coupon_cleanup_options['WCCouponCleaner_DeletionDelay'])) {
+			$deletionDelay = $deletionDelay - ($woocommerce_coupon_cleanup_options['WCCouponCleaner_DeletionDelay'] * 24 * 60 * 60);
+		}
+		
 		$args = array(
 			'numberposts' => -1,
 			'post_type' => 'shop_coupon',
@@ -66,7 +71,7 @@ class WCCouponCleaner_CleanCoupons {
 				array(
 					'key' => 'date_expires',
 					'value' => $deletionDelay,
-					'compare' => '<='
+					'compare' => '<'
 				),
 				array(
 					'key' => 'date_expires',
@@ -76,15 +81,12 @@ class WCCouponCleaner_CleanCoupons {
 			)
 		);
 		$coupons = get_posts($args);
-		if (!is_array($woocommerce_coupon_cleanup_options)) {
-			$woocommerce_coupon_cleanup_options = [];
-		}
+
 		if (!empty($coupons)) {
 			foreach ($coupons as $coupon) {
 				$isMatched = true;
 				if (isset($woocommerce_coupon_cleanup_options['WCCouponCleaner_CouponCodeFilter'])) {
-					$couponCode = $coupon->get_code();
-
+					$couponCode = $coupon->post_title;
 					$couponCodeLc = strtolower($couponCode);
 					$filterValueLc = strtolower($woocommerce_coupon_cleanup_options['WCCouponCleaner_CouponCodeFilter']);
 					$isMatched = str_contains($couponCodeLc, $filterValueLc);
