@@ -16,8 +16,10 @@ License: GPLv3
 WC Coupon Cleaner is a plugin which will clean up all expired coupons created in WooCommerce. This allows you to free up space in the database, prevent bloat and keep track of what coupons are still in use.
 
 - Remove expired coupons from WooCommerce
-- Schedule cleanup hourly, daily or twice daily
+- Schedule cleanup hourly, daily, twice a day, or weekly
 - Have option to either trash it or permanently delete it
+- Only remove coupons with certain text in the code
+- Remove coupons only after they have been expired for a given number of days
 
 = Doesn't fit your requirement(s)? =
 
